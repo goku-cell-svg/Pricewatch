@@ -29,6 +29,8 @@ HEADERS = {
 def send_message(text, chat_id=None):
     cid = chat_id or CHAT_ID
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    print(f"DEBUG URL: https://api.telegram.org/bot{TELEGRAM_TOKEN[:15]}***/sendMessage")
+    print(f"DEBUG CHAT_ID: {cid}")
     data = json.dumps({"chat_id": cid, "text": text, "parse_mode": "HTML"}).encode()
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
     try:
