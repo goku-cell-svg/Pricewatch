@@ -20,15 +20,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar dependencias
-        run: |
-          pip install playwright
-          playwright install chromium
-          playwright install-deps chromium
-
-      - name: Ejecutar diagnostico
-        run: python diagnostico.py
-
       - name: Ejecutar scraper
         run: python scraper.py
 
