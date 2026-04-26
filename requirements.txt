@@ -1,0 +1,2 @@
+# PriceWatch - dependencias
+# No hay dependencias externas, usamos solo la librería estándar de Python
