@@ -29,7 +29,23 @@ jobs:
           playwright install-deps chromium
 
       - name: 🔍 Ejecutar el scraper
-        run: python scraper.py
+        run: |
+          python scraper.py
+          python -c "
+import asyncio
+from playwright.async_api import async_playwright
+async def test():
+    async with async_playwright() as p:
+        b = await p.chromium.launch(headless=True, args=['--no-sandbox'])
+        ctx = await b.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        page = await ctx.new_page()
+        await page.goto('https://www.dieteticacentral.com/marcas/nutripraxis/brocosulf-90cap.html', timeout=45000)
+        await asyncio.sleep(4)
+        content = await page.content()
+        print(content[:3000])
+        await b.close()
+asyncio.run(test())
+"
 
       - name: 💾 Guardar resultados en el repositorio
         run: |
