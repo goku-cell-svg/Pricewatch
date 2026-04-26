@@ -1,0 +1,6 @@
+[deploy]
+startCommand = "python bot.py"
+
+[env]
+TELEGRAM_TOKEN = {default = ""}
+CHAT_ID = {default = ""}
