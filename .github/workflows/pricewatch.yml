@@ -2,55 +2,40 @@ name: PriceWatch - Escaneo diario de precios
 
 on:
   schedule:
-    # Se ejecuta todos los días a las 9:00 hora España (8:00 UTC)
     - cron: '0 8 * * *'
   workflow_dispatch:
-    # Permite ejecutarlo manualmente desde GitHub con un clic
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Descargar el repositorio
+      - name: Descargar el repositorio
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🐍 Instalar Python
+      - name: Instalar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 📦 Instalar dependencias
+      - name: Instalar dependencias
         run: |
           pip install playwright
           playwright install chromium
           playwright install-deps chromium
 
-      - name: 🔍 Ejecutar el scraper
-        run: |
-          python scraper.py
-          python -c "
-import asyncio
-from playwright.async_api import async_playwright
-async def test():
-    async with async_playwright() as p:
-        b = await p.chromium.launch(headless=True, args=['--no-sandbox'])
-        ctx = await b.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
-        page = await ctx.new_page()
-        await page.goto('https://www.dieteticacentral.com/marcas/nutripraxis/brocosulf-90cap.html', timeout=45000)
-        await asyncio.sleep(4)
-        content = await page.content()
-        print(content[:3000])
-        await b.close()
-asyncio.run(test())
-"
+      - name: Ejecutar diagnostico
+        run: python diagnostico.py
 
-      - name: 💾 Guardar resultados en el repositorio
+      - name: Ejecutar scraper
+        run: python scraper.py
+
+      - name: Guardar resultados
         run: |
           git config --local user.email "pricewatch@github.com"
           git config --local user.name "PriceWatch Bot"
           git add precios.csv alertas.json || true
-          git diff --staged --quiet || git commit -m "📊 Actualización de precios - $(date '+%Y-%m-%d %H:%M')"
+          git diff --staged --quiet || git commit -m "Actualizacion de precios - $(date '+%Y-%m-%d %H:%M')"
           git push || true
